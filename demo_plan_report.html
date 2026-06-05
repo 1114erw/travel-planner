@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>北京 - 杭州 旅行攻略</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding-bottom: 50px; }
+        .container { max-width: 900px; margin: 0 auto; padding: 30px; }
+        .header { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .header h1 { color: #333; font-size: 28px; margin-bottom: 20px; line-height: 1.4; }
+        .header .info { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .header .info-item { background: #f8f9fa; padding: 15px; border-radius: 10px; }
+        .header .info-item span { color: #666; font-size: 14px; }
+        .header .info-item strong { color: #333; }
+        .weather-section { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .weather-section h2 { color: #333; font-size: 22px; margin-bottom: 20px; }
+        .weather-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; }
+        .weather-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 15px; text-align: center; }
+        .weather-card .date { font-size: 14px; opacity: 0.9; }
+        .weather-card .icon { font-size: 36px; margin: 10px 0; }
+        .weather-card .temp { font-size: 18px; font-weight: bold; }
+        .day-section { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .day-section h2 { color: #333; font-size: 22px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
+        .day-section h2 span { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 16px; border-radius: 20px; font-size: 14px; }
+        .schedule { display: grid; gap: 20px; }
+        .schedule-item { background: #f8f9fa; padding: 20px; border-radius: 15px; }
+        .schedule-item .time { color: #667eea; font-weight: bold; margin-bottom: 10px; font-size: 16px; }
+        .schedule-item .location { font-size: 18px; font-weight: bold; color: #333; margin-bottom: 8px; }
+        .schedule-item .desc { color: #666; line-height: 1.6; }
+        .schedule-item .image-wrapper { margin: 15px 0; border-radius: 10px; overflow: hidden; }
+        .schedule-item .attraction-image { width: 100%; height: 200px; object-fit: cover; }
+        .nav-btn { display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 20px; border-radius: 25px; text-decoration: none; font-size: 14px; margin-top: 10px; transition: all 0.2s; }
+        .nav-btn:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); }
+        .recommend-section { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .recommend-section h2 { color: #333; font-size: 22px; margin-bottom: 20px; }
+        .recommend-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .recommend-item { background: #f8f9fa; padding: 20px; border-radius: 15px; }
+        .recommend-item .image-wrapper { margin-bottom: 15px; border-radius: 10px; overflow: hidden; }
+        .recommend-item .recommend-image { width: 100%; height: 150px; object-fit: cover; }
+        .recommend-item .title { font-weight: bold; color: #333; margin-bottom: 8px; font-size: 16px; }
+        .recommend-item .desc { color: #666; font-size: 14px; line-height: 1.5; }
+        .recommend-item .price { color: #f5576c; font-weight: bold; margin-top: 10px; }
+        .budget-section { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .budget-section h2 { color: #333; font-size: 22px; margin-bottom: 20px; }
+        .budget-table { width: 100%; border-collapse: collapse; }
+        .budget-table th, .budget-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .budget-table th { background: #f8f9fa; color: #666; font-weight: 600; }
+        .budget-table tr:last-child td { border-bottom: none; }
+        .budget-table .total { font-weight: bold; color: #667eea; font-size: 16px; }
+        .footer { text-align: center; color: rgba(255,255,255,0.8); margin-top: 30px; font-size: 14px; }
+        .city-hero { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 40px; margin-bottom: 30px; color: white; }
+        .city-hero h2 { font-size: 24px; margin-bottom: 15px; }
+        .city-hero .hero-image { width: 100%; height: 250px; border-radius: 15px; object-fit: cover; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✈️ 北京 → 杭州 旅行攻略</h1>
+            <div class="info">
+                <div class="info-item"><span>出发日期：</span><strong>2026年06月10日</strong></div>
+                <div class="info-item"><span>结束日期：</span><strong>2026年06月13日</strong></div>
+                <div class="info-item"><span>旅行天数：</span><strong>4天</strong></div>
+                <div class="info-item"><span>出行人数：</span><strong>2人</strong></div>
+                <div class="info-item"><span>旅行风格：</span><strong>shushi</strong></div>
+                <div class="info-item"><span>交通方式：</span><strong>huoche</strong></div>
+            </div>
+        </div>
+        
+        <!-- 目的地风采 -->
+        <div class="city-hero">
+            <h2>🏙️ 杭州 风采</h2>
+            <p style="opacity: 0.9;">感受这座城市的独特魅力</p>
+            <img src="https://img2.baidu.com/it/u=1955006789,3623451235&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=533" alt="杭州" class="hero-image">
+        </div>
+        
+        <div class="weather-section">
+            <h2>🌤️ 未来4天天气预报</h2>
+            <div class="weather-grid">
+                <div class="weather-card">
+                    <div class="date">2026-06-10</div>
+                    <div class="icon">☀️</div>
+                    <div class="temp">15-22°C</div>
+                    <div style="font-size: 12px; opacity: 0.9;">雷阵雨</div>
+                </div>
+                <div class="weather-card">
+                    <div class="date">2026-06-11</div>
+                    <div class="icon">☀️</div>
+                    <div class="temp">15-22°C</div>
+                    <div style="font-size: 12px; opacity: 0.9;">小雨</div>
+                </div>
+                <div class="weather-card">
+                    <div class="date">2026-06-12</div>
+                    <div class="icon">☀️</div>
+                    <div class="temp">20-28°C</div>
+                    <div style="font-size: 12px; opacity: 0.9;">阵雨</div>
+                </div>
+                <div class="weather-card">
+                    <div class="date">2026-06-13</div>
+                    <div class="icon">☀️</div>
+                    <div class="temp">25-32°C</div>
+                    <div style="font-size: 12px; opacity: 0.9;">阴</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="day-section">
+            <h2><span>Day 1</span> 2026-06-10 - 抵达与初识</h2>
+            <div class="schedule">
+                <div class="schedule-item">
+                    <div class="time">🌅 上午 09:00-12:00</div>
+                    <div class="location">抵达杭州</div>
+                    <div class="desc">乘坐huoche抵达目的地，前往酒店办理入住，稍作休整</div>
+                </div>
+                <div class="schedule-item">
+                    <div class="time">🍽️ 午餐 12:00-13:30</div>
+                    <div class="location">当地特色餐厅</div>
+                    <div class="desc">品尝杭州特色美食，感受当地饮食文化</div>
+                </div>
+                <div class="schedule-item">
+                    <div class="time">🏛️ 下午 14:00-17:00</div>
+                    <div class="location">市区游览</div>
+                    <div class="desc">漫步市中心，感受城市氛围</div>
+                    <div class="image-wrapper"><img src="https://img2.baidu.com/it/u=1955006789,3623451235&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=533" alt="杭州" class="attraction-image"></div>
+                    <a href="https://uri.amap.com/marker?position=116.4074,39.9042&name=杭州" class="nav-btn">📍 导航前往</a>
+                </div>
+                <div class="schedule-item">
+                    <div class="time">🌙 晚餐 18:00-20:00</div>
+                    <div class="location">当地美食街</div>
+                    <div class="desc">体验当地夜市文化，品尝特色小吃</div>
+                </div>
+            </div>
+        </div>
+        <div class="day-section">
+            <h2><span>Day 2</span> 2026-06-10 - 深度探索</h2>
+            <div class="schedule">
+                <div class="schedule-item">
+                    <div class="time">🌄 上午 08:30-12:00</div>
+                    <div class="location">西湖</div>
+                    <div class="desc">参观杭州标志性景点，感受独特魅力</div>
+                    <div class="image-wrapper"><img src="https://img0.baidu.com/it/u=2450735123,3682195877&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=1067" alt="西湖" class="attraction-image"></div>
+                    <a href="https://uri.amap.com/search?query=西湖&city=杭州&src=url&name=西湖" class="nav-btn">📍 导航前往</a>
+                </div>
+                <div class="schedule-item">
+                    <div class="time">🍲 午餐 12:00-13:30</div>
+                    <div class="location">特色餐馆</div>
+                    <div class="desc">品尝当地风味美食，体验地道口味</div>
+                </div>
+                <div class="schedule-item">
+                    <div class="time">🎡 下午 14:00-17:30</div>
+                    <div class="location">文化体验</div>
+                    <div class="desc">沉浸式体验当地文化与自然景观</div>
+                    <a href="https://uri.amap.com/search?query=杭州文化体验&city=杭州&src=url&name=杭州文化体验" class="nav-btn">📍 导航前往</a>
+                </div>
+                <div class="schedule-item">
+                    <div class="time">🍷 晚餐 18:30-20:30</div>
+                    <div class="location">当地特色餐厅</div>
+                    <div class="desc">享用杭州特色晚餐</div>
+                </div>
+            </div>
+        </div>
+        <div class="day-section">
+            <h2><span>Day 3</span> 2026-06-10 - 深度探索</h2>
+            <div class="schedule">
+                <div class="schedule-item">
+                    <div class="time">🌄 上午 08:30-12:00</div>
+                    <div class="location">灵隐寺</div>
+                    <div class="desc">参观杭州标志性景点，感受独特魅力</div>
+                    <div class="image-wrapper"><img src="https://img1.baidu.com/it/u=3725965711,1136466516&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=653" alt="灵隐寺" class="attraction-image"></div>
+                    <a href="https://uri.amap.com/search?query=灵隐寺&city=杭州&src=url&name=灵隐寺" class="nav-btn">📍 导航前往</a>
+                </div>
+                <div class="schedule-item">
+                    <div class="time">🍲 午餐 12:00-13:30</div>
+                    <div class="location">特色餐馆</div>
+                    <div class="desc">品尝当地风味美食，体验地道口味</div>
+                </div>
+                <div class="schedule-item">
+                    <div class="time">🎡 下午 14:00-17:30</div>
+                    <div class="location">文化体验</div>
+                    <div class="desc">沉浸式体验当地文化与自然景观</div>
+                    <a href="https://uri.amap.com/search?query=杭州文化体验&city=杭州&src=url&name=杭州文化体验" class="nav-btn">📍 导航前往</a>
+                </div>
+                <div class="schedule-item">
+                    <div class="time">🍷 晚餐 18:30-20:30</div>
+                    <div class="location">当地特色餐厅</div>
+                    <div class="desc">享用杭州特色晚餐</div>
+                </div>
+            </div>
+        </div>
+        <div class="day-section">
+            <h2><span>Day 4</span> 2026-06-13 - 告别之旅</h2>
+            <div class="schedule">
+                <div class="schedule-item">
+                    <div class="time">🌅 上午 08:30-11:00</div>
+                    <div class="location">最后的游览</div>
+                    <div class="desc">在离开前，再感受一下杭州的魅力</div>
+                    <a href="https://uri.amap.com/search?query=杭州地标&city=杭州&src=url&name=杭州地标" class="nav-btn">📍 导航前往</a>
+                </div>
+                <div class="schedule-item">
+                    <div class="time">🍽️ 午餐 11:30-13:00</div>
+                    <div class="location">告别午餐</div>
+                    <div class="desc">享用最后一顿当地美食，留下美好回忆</div>
+                </div>
+                <div class="schedule-item">
+                    <div class="time">✈️ 下午 13:00-</div>
+                    <div class="location">返程</div>
+                    <div class="desc">整理行李，办理退房，踏上返程旅途</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="recommend-section">
+            <h2>🏨 酒店推荐</h2>
+            <div class="recommend-list">
+                <div class="recommend-item">
+                    <div class="image-wrapper"><img src="https://picsum.photos/seed/hotel1/250/150" alt="酒店1" class="recommend-image"></div>
+                    <div class="title">精选酒店A</div><div class="desc">位于市中心，交通便利，设施齐全</div><div class="price">¥1500+/晚</div>
+                </div>
+                <div class="recommend-item">
+                    <div class="image-wrapper"><img src="https://picsum.photos/seed/hotel2/250/150" alt="酒店2" class="recommend-image"></div>
+                    <div class="title">精选酒店B</div><div class="desc">环境优雅，服务周到，适合度假</div><div class="price">¥2000+/晚</div>
+                </div>
+                <div class="recommend-item">
+                    <div class="image-wrapper"><img src="https://picsum.photos/seed/hotel3/250/150" alt="酒店3" class="recommend-image"></div>
+                    <div class="title">精选酒店C</div><div class="desc">性价比高，位置优越，出行方便</div><div class="price">¥1200+/晚</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="recommend-section">
+            <h2>🍜 美食推荐</h2>
+            <div class="recommend-list">
+                <div class="recommend-item">
+                    <div class="image-wrapper"><img src="https://picsum.photos/seed/food1/250/150" alt="美食1" class="recommend-image"></div>
+                    <div class="title">特色美食1</div><div class="desc">杭州必尝，地道风味</div>
+                </div>
+                <div class="recommend-item">
+                    <div class="image-wrapper"><img src="https://picsum.photos/seed/food2/250/150" alt="美食2" class="recommend-image"></div>
+                    <div class="title">特色美食2</div><div class="desc">当地招牌，不容错过</div>
+                </div>
+                <div class="recommend-item">
+                    <div class="image-wrapper"><img src="https://picsum.photos/seed/food3/250/150" alt="美食3" class="recommend-image"></div>
+                    <div class="title">特色美食3</div><div class="desc">风味独特，回味无穷</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="budget-section">
+            <h2>💰 预算明细</h2>
+            <table class="budget-table">
+                <tr><th>项目</th><th>费用（元/人）</th><th>备注</th></tr>
+                <tr><td>交通</td><td>根据实际选择</td><td>往返交通费用</td></tr>
+                <tr><td>住宿</td><td>约2000元/晚</td><td>根据酒店选择</td></tr>
+                <tr><td>餐饮</td><td>约300/天</td><td>每日餐饮费用</td></tr>
+                <tr><td>门票</td><td>约200-500</td><td>景点门票费用</td></tr>
+                <tr><td>其他</td><td>约100-300</td><td>购物、交通等杂费</td></tr>
+                <tr><td class="total">总计</td><td class="total">约7800 - 8500元</td><td class="total">仅供参考</td></tr>
+            </table>
+        </div>
+        
+        <div class="footer">
+            <p>✈️ 祝您旅途愉快！</p>
+            <p style="margin-top: 10px; opacity: 0.6;">本攻略由AI智能生成 | 仅供参考</p>
+        </div>
+    </div>
+</body>
+</html>

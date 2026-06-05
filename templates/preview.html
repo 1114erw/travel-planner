@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - 旅行攻略</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 16px;
+            color: #333;
+        }
+        .header .header-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .update-time {
+            font-size: 10px;
+            color: #999;
+            padding: 2px 8px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 8px;
+        }
+        .live-clock {
+            font-size: 11px;
+            color: #667eea;
+            font-weight: 600;
+        }
+        .header .back-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 16px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .header .back-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+        }
+        .result-container {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .result-container h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+        .plan-text {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            font-size: 13px;
+            color: #333;
+        }
+        .plan-section {
+            margin-bottom: 18px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .plan-section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: none;
+            position: relative;
+        }
+        .plan-section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 44px;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea 0%, rgba(118, 75, 162, 0.3) 50%, transparent 100%);
+            border-radius: 1px;
+        }
+        .plan-section-title i {
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+        }
+        /* 线路概览 */
+        .overview-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .overview-day-card {
+            display: flex;
+            background: linear-gradient(135deg, #f8f9ff 0%, #fff5f7 100%);
+            border-radius: 10px;
+            padding: 12px;
+            gap: 12px;
+            align-items: center;
+            border: 1px solid #e8eaf0;
+        }
+        .overview-day-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 65px;
+            padding-right: 12px;
+            border-right: 2px dashed #d0d4e4;
+        }
+        .overview-day-label {
+            font-size: 10px;
+            color: #888;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+        .overview-day-num {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+            margin: 2px 0;
+        }
+        .overview-day-city {
+            font-size: 11px;
+            color: #666;
+            font-weight: 500;
+        }
+        .overview-day-right {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+        .overview-attraction {
+            background: #fff;
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 11px;
+            color: #444;
+            border: 1px solid #e0e3ec;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+        .overview-att-name {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .plan-day {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.06), 0 1px 4px rgba(0, 0, 0, 0.03);
+            border: 1px solid #f0f0f2;
+            position: relative;
+        }
+        .plan-day::before {
+            display: none;
+        }
+        .day-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            position: relative;
+        }
+        .day-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 38px;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(245, 87, 108, 0.4) 0%, rgba(240, 147, 251, 0.2) 50%, transparent 100%);
+        }
+        .day-badge {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            box-shadow: 0 2px 8px rgba(245, 87, 108, 0.25);
+        }
+        .day-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            letter-spacing: 0.3px;
+        }
+        .weather-card {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            border-radius: 8px;
+            padding: 6px 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            box-shadow: 0 1px 6px rgba(116, 185, 255, 0.2);
+        }
+        .weather-card .weather-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .weather-card .weather-info {
+            flex: 1;
+        }
+        .weather-card .weather-main {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 2px;
+        }
+        .weather-card .weather-type {
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .weather-card .weather-temp {
+            font-size: 11px;
+            font-weight: 500;
+            opacity: 0.95;
+        }
+        .weather-card .weather-detail {
+            font-size: 12px;
+            opacity: 0.9;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .plan-item {
+            background: #fafbfc;
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
+            transition: all 0.2s ease;
+            border: 1px solid #f0f0f0;
+        }
+        .plan-item:hover {
+            background: #f3f4f8;
+            transform: translateX(2px);
+        }
+        .item-time-badge {
+            background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            display: inline-block;
+        }
+        .item-content {
+            flex: 1;
+        }
+        .item-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+            font-size: 13px;
+        }
+        .item-desc {
+            color: #666;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        .plan-text .attraction-img {
+            max-width: 200px;
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin: 10px 0;
+            display: block;
+        }
+        .plan-text .nav-btn {
+            display: block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white !important;
+            padding: 6px 14px;
+            border-radius: 16px;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+            width: fit-content;
+        }
+        .plan-text .nav-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+        .hotels-container {
+            display: grid;
+            gap: 10px;
+        }
+        .hotel-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 14px;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+            border-left: 3px solid #667eea;
+        }
+        .hotel-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+        .hotel-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            color: #666;
+            font-size: 11px;
+        }
+        .hotel-desc {
+            margin-top: 6px;
+            color: #888;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+        .hotel-actions {
+            margin-top: 8px;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .item-actions {
+            margin-top: 6px;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .budget-section {
+            background: #fffbe6;
+            border-radius: 10px;
+            padding: 14px;
+            border: 1px solid #ffe58f;
+        }
+        .budget-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+        .budget-table th, .budget-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #fff2cc;
+        }
+        .budget-table th {
+            background: #fff7e6;
+            font-weight: 600;
+            color: #d48806;
+        }
+        .budget-total {
+            font-weight: 600;
+            color: #fa8c16;
+            font-size: 13px;
+        }
+        .tips-list {
+            list-style: none;
+            padding: 0;
+        }
+        .tip-item {
+            padding: 8px 12px;
+            background: #f6ffed;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 3px solid #52c41a;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+        .transport-item {
+            background: #fff;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .transport-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #13c2c2 0%, #1890ff 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+        .transport-info {
+            flex: 1;
+        }
+        .transport-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 12px;
+        }
+        .foods-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 8px;
+        }
+        .food-card {
+            background: linear-gradient(135deg, #fff7e6 0%, #fff1b8 100%);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        .food-name {
+            font-weight: 600;
+            color: #d46b08;
+            font-size: 11px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 18px;
+            padding-top: 12px;
+            position: relative;
+        }
+        .action-buttons::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(102, 126, 234, 0.3) 50%, transparent 100%);
+        }
+        .action-buttons button {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 18px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .action-buttons .primary-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .action-buttons .secondary-btn {
+            background: #f5f5f5;
+            color: #666;
+        }
+        .action-buttons button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .action-buttons .share-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        .action-buttons .download-btn {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        
+        /* 日期导航标签 */
+        .day-nav {
+            position: fixed;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        .day-nav-item {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        .day-nav-item:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateX(-3px);
+        }
+        .day-nav-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        }
+        .day-nav-label {
+            font-size: 10px;
+            color: #999;
+            text-align: center;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 4px;
+        }
+        
+        /* 分享模态框 */
+        .share-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .share-modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 24px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 450px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .share-modal-content h3 {
+            margin: 0 0 12px 0;
+            color: #333;
+            font-size: 18px;
+        }
+        .share-modal-content p {
+            margin: 0 0 16px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        .share-modal-content input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            font-family: monospace;
+        }
+        .share-modal-content input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .share-modal-content .share-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        .share-modal-content .share-actions button {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .share-modal-content .share-actions button:first-child {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .share-modal-content .share-actions button:last-child {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .share-modal-content .share-actions button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-btn:hover,
+        .close-btn:focus {
+            color: #333;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        @media print {
+            body {
+                background: white;
+            }
+            .header {
+                display: none;
+            }
+            .action-buttons {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>📄 {{ title }}</h1>
+            <span class="live-clock" id="live-clock">⏰ 加载中...</span>
+            <span class="update-time" id="update-time-display">💾 最后更新: 2026-06-04 20:34:21</span>
+        </div>
+        <a href="/" class="back-btn">← 返回首页</a>
+    </div>
+    
+    <!-- 日期导航标签 -->
+    <div class="day-nav" id="dayNav">
+        <div class="day-nav-label">行程天数</div>
+        {% for day_num in range(1, days+1) %}
+            <div class="day-nav-item" data-day="{{ day_num }}" onclick="scrollToDay({{ day_num }})">
+                {{ day_num }}
+            </div>
+        {% endfor %}
+    </div>
+    
+    <div class="result-container">
+        <h2>📄 生成的旅行攻略</h2>
+        <div class="plan-text">
+            {{ plan_html|safe }}
+        </div>
+        
+        <div class="action-buttons">
+            <button class="primary-btn" onclick="window.print()">🖨️ 打印攻略</button>
+            <button class="share-btn" onclick="sharePlan()">🔗 生成分享链接</button>
+            <button class="download-btn" onclick="downloadPlan()">📥 下载HTML</button>
+        </div>
+    </div>
+
+    <div class="share-modal" id="shareModal">
+        <div class="share-modal-content">
+            <span class="close-btn" onclick="closeShareModal()">&times;</span>
+            <h3>🔗 分享攻略</h3>
+            <p>分享链接给朋友：</p>
+            <input type="text" id="shareLink" readonly>
+            <div class="share-actions">
+                <button onclick="downloadPlan()">📥 下载HTML文件</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 实时时钟
+        function updateClock() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const clockEl = document.getElementById('live-clock');
+            if (clockEl) {
+                clockEl.textContent = `⏰ ${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            }
+        }
+
+        // 获取最后更新时间
+        function fetchLastUpdate() {
+            fetch('/api/last-update')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.last_update_time) {
+                        const updateEl = document.getElementById('update-time-display');
+                        if (updateEl) {
+                            updateEl.textContent = `💾 最后更新: ${data.last_update_time}`;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('获取更新时间失败:', error);
+                });
+        }
+
+        function sharePlan() {
+            const currentUrl = window.location.href;
+            document.getElementById('shareLink').value = currentUrl;
+            document.getElementById('shareModal').style.display = 'block';
+        }
+
+        function closeShareModal() {
+            document.getElementById('shareModal').style.display = 'none';
+        }
+
+        function downloadPlan() {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'travel-plan.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            closeShareModal();
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('shareModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // 滚动到指定天数
+        function scrollToDay(dayNum) {
+            const dayElement = document.querySelector(`[data-day-section="${dayNum}"]`);
+            if (dayElement) {
+                dayElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // 监听滚动，高亮当前可见的天数
+        function updateActiveDayNav() {
+            const daySections = document.querySelectorAll('[data-day-section]');
+            const navItems = document.querySelectorAll('.day-nav-item');
+            
+            let currentDay = 1;
+            const windowTop = window.scrollY + 150;
+            
+            daySections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (sectionTop <= windowTop) {
+                    currentDay = parseInt(section.getAttribute('data-day-section'));
+                }
+            });
+            
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (parseInt(item.getAttribute('data-day')) === currentDay) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            updateClock();
+            setInterval(updateClock, 1000);
+            fetchLastUpdate();
+            updateActiveDayNav();
+            window.addEventListener('scroll', updateActiveDayNav);
+        });
+    </script>
+</body>
+</html>

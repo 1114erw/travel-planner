@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✈️ 旅游规划助手</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .btn-random {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        .result-section {
+            display: none;
+        }
+        .result-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        /* ============ 新结构化行程布局样式 ============ */
+        .plan-text {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.7;
+            font-size: 14px;
+            color: #333;
+        }
+        .plan-section {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f0f0f0;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 2px solid #f5f5f5;
+        }
+        .section-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        /* 交通方案 */
+        .transport-card {
+            background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 100%);
+            padding: 16px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 2;
+            color: #4a5568;
+        }
+        /* 线路概览 */
+        .overview-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .overview-day-card {
+            display: flex;
+            background: linear-gradient(135deg, #f8f9ff 0%, #fff5f7 100%);
+            border-radius: 14px;
+            padding: 16px;
+            gap: 20px;
+            align-items: center;
+            border: 1px solid #e8eaf0;
+        }
+        .overview-day-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 80px;
+            padding-right: 20px;
+            border-right: 2px dashed #d0d4e4;
+        }
+        .overview-day-label {
+            font-size: 12px;
+            color: #888;
+            letter-spacing: 2px;
+            font-weight: 500;
+        }
+        .overview-day-num {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+            margin: 2px 0;
+        }
+        .overview-day-city {
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+        }
+        .overview-day-right {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .overview-attraction {
+            background: #fff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #444;
+            border: 1px solid #e0e3ec;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .overview-att-name {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        /* 每日行程卡片 */
+        .plan-day {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f0f0f0;
+        }
+        .day-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 2px solid #f5f5f5;
+        }
+        .day-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            margin-right: 14px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        .day-date {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        .day-items {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .weather-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: white;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+        }
+        .weather-card .weather-icon {
+            font-size: 40px;
+        }
+        .weather-card .weather-info {
+            flex: 1;
+        }
+        .weather-card .weather-main {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+        .weather-card .weather-type {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .weather-card .weather-temp {
+            font-size: 16px;
+            font-weight: 600;
+            opacity: 0.95;
+        }
+        .weather-card .weather-detail {
+            font-size: 13px;
+            opacity: 0.9;
+            display: flex;
+            gap: 16px;
+        }
+        .plan-item {
+            background: #fafbfc;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            border-left: 3px solid #667eea;
+            transition: all 0.2s;
+            flex-wrap: wrap;
+        }
+        .plan-item:hover {
+            background: #f3f4f8;
+            transform: translateX(3px);
+        }
+        .item-time-badge {
+            background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            min-width: 38px;
+            text-align: center;
+        }
+        .item-icon {
+            font-size: 22px;
+            min-width: 28px;
+            text-align: center;
+            line-height: 1.3;
+        }
+        .item-content {
+            flex: 1;
+            min-width: 200px;
+        }
+        .item-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        .info-tag {
+            display: inline-block;
+            font-size: 13px;
+            color: #718096;
+            margin-right: 6px;
+            padding: 3px 0;
+        }
+        .attraction-image-wrapper {
+            width: 100%;
+            margin-top: 12px;
+        }
+        .plan-text .attraction-img {
+            max-width: 400px;
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: block;
+        }
+        /* 导航按钮 */
+        .plan-text .nav-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white !important;
+            padding: 8px 18px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 13px;
+            margin-top: 10px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.25);
+            white-space: nowrap;
+        }
+        .plan-text .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        /* 酒店卡片 */
+        .hotels-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+        .hotel-card {
+            background: linear-gradient(135deg, #fff5f7 0%, #fef5ff 100%);
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px solid #ffe4ec;
+        }
+        .hotel-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .hotel-details {
+            margin-bottom: 8px;
+        }
+        .hotel-reason {
+            font-size: 13px;
+            color: #718096;
+            margin-top: 6px;
+            font-style: italic;
+        }
+        .hotel-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .item-actions {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        /* 美食标签 */
+        .foods-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .food-tag {
+            background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+            color: #92400e;
+            padding: 8px 14px;
+            border-radius: 18px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        /* 预算表格 */
+        .budget-table {
+            background: #f8fafc;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .budget-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+        .budget-row:last-child {
+            border-bottom: none;
+        }
+        .budget-row.total-row {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            padding: 14px 20px;
+        }
+        .budget-label {
+            color: #4a5568;
+        }
+        .budget-row.total-row .budget-label {
+            color: white;
+        }
+        .budget-value {
+            font-weight: 600;
+            color: #2d3748;
+        }
+        .budget-row.total-row .budget-value {
+            color: white;
+        }
+        /* 贴士 */
+        .tips-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .tip-item {
+            background: #f0fdf4;
+            color: #166534;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            border-left: 3px solid #22c55e;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        .loading .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .timeline {
+            margin-top: 20px;
+        }
+        .timeline-item {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        .timeline-item .time {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .timeline-item .content {
+            display: grid;
+            gap: 10px;
+        }
+        .timeline-item .activity {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .timeline-item .activity .icon {
+            font-size: 24px;
+        }
+        .timeline-item .activity .info {
+            flex: 1;
+        }
+        .timeline-item .activity .info .name {
+            font-weight: bold;
+            color: #333;
+        }
+        .timeline-item .activity .info .detail {
+            font-size: 14px;
+            color: #666;
+        }
+        .timeline-item .activity .nav-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .action-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .action-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .action-btn.secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .nav-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .nav-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .nav-btn.secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        @media (max-width: 600px) {
+            .btn {
+                min-width: 100%;
+            }
+            .nav-btn {
+                width: 100%;
+            }
+        }
+        
+        /* ============ 深色模式样式 ============ */
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+        body.dark-mode .card {
+            background: #1e1e2f;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        body.dark-mode .header h1 {
+            color: #fff;
+        }
+        body.dark-mode .header p {
+            color: #aaa;
+        }
+        body.dark-mode .form-group label {
+            color: #ddd;
+        }
+        body.dark-mode .form-group input,
+        body.dark-mode .form-group select,
+        body.dark-mode .form-group textarea {
+            background: #2a2a3e;
+            border-color: #444;
+            color: #fff;
+        }
+        body.dark-mode .form-group input::placeholder,
+        body.dark-mode .form-group textarea::placeholder {
+            color: #666;
+        }
+        body.dark-mode .btn-secondary {
+            background: #3a3a4e;
+            color: #ddd;
+        }
+        body.dark-mode h3 {
+            color: #fff;
+        }
+        body.dark-mode .plan-text {
+            color: #ddd;
+        }
+        body.dark-mode .plan-section {
+            background: #1e1e2f;
+            border-color: #3a3a4e;
+        }
+        body.dark-mode .section-title {
+            color: #fff;
+        }
+        body.dark-mode .section-header {
+            border-bottom-color: #3a3a4e;
+        }
+        body.dark-mode .transport-card {
+            background: linear-gradient(135deg, #2a2a4e 0%, #3a2a4e 100%);
+            color: #ddd;
+        }
+        body.dark-mode .overview-day-card {
+            background: linear-gradient(135deg, #2a2a3e 0%, #3a2a3e 100%);
+            border-color: #444;
+        }
+        body.dark-mode .overview-day-label,
+        body.dark-mode .overview-day-city {
+            color: #888;
+        }
+        body.dark-mode .overview-attraction {
+            background: #3a3a4e;
+            color: #ddd;
+        }
+        body.dark-mode .day-card {
+            background: #1e1e2f;
+            border-color: #3a3a4e;
+        }
+        body.dark-mode .day-header {
+            background: #2a2a3e;
+            border-color: #444;
+        }
+        body.dark-mode .day-date {
+            color: #888;
+        }
+        body.dark-mode .item-card {
+            background: #2a2a3e;
+            border-color: #444;
+        }
+        body.dark-mode .item-title {
+            color: #fff;
+        }
+        body.dark-mode .item-desc {
+            color: #aaa;
+        }
+        body.dark-mode .food-tag {
+            background: linear-gradient(135deg, #4a3e2e 0%, #5a4e3e 100%);
+            color: #d4a574;
+        }
+        body.dark-mode .budget-table {
+            background: #2a2a3e;
+        }
+        body.dark-mode .budget-row {
+            border-bottom-color: #444;
+            color: #ddd;
+        }
+        body.dark-mode .budget-label {
+            color: #aaa;
+        }
+        body.dark-mode .budget-value {
+            color: #ddd;
+        }
+        body.dark-mode .tip-item {
+            background: #1e3e2e;
+            color: #86efac;
+            border-left-color: #22c55e;
+        }
+        body.dark-mode .hotel-card {
+            background: #2a2a3e;
+            border-color: #444;
+        }
+        body.dark-mode .hotel-name {
+            color: #fff;
+        }
+        body.dark-mode .hotel-info {
+            color: #aaa;
+        }
+        body.dark-mode .toast {
+            background: #444;
+        }
+        /* 主题切换按钮 */
+        .theme-toggle-btn {
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 50%;
+            font-size: 22px;
+            cursor: pointer;
+            background: rgba(255,255,255,0.2);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .theme-toggle-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+        body.dark-mode .theme-toggle-btn {
+            background: rgba(255,255,255,0.1);
+        }
+        /* 更新时间样式 */
+        .update-time {
+            font-size: 11px;
+            color: #999;
+            margin-top: 4px;
+            padding: 2px 6px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+            display: inline-block;
+        }
+        body.dark-mode .update-time {
+            color: #666;
+            background: rgba(255,255,255,0.05);
+        }
+        .live-clock {
+            font-size: 13px;
+            color: #667eea;
+            font-weight: 600;
+            padding: 4px 12px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            display: inline-block;
+        }
+        body.dark-mode .live-clock {
+            color: #a5b4fc;
+            background: rgba(102, 126, 234, 0.2);
+        }
+        .header-time-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <div>
+                    <h1>✈️ 旅游规划助手</h1>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <p>输入您的旅行信息，AI为您生成专属攻略</p>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div class="header-time-group">
+                                <span class="live-clock" id="live-clock">⏰ 加载中...</span>
+                                <div id="last-update" class="update-time" title="最后更新时间">
+                                    💾 <span id="update-time-value">2026-06-04 20:34:21</span>
+                                </div>
+                            </div>
+                            <button id="theme-toggle" class="theme-toggle-btn" title="切换深色/浅色模式">
+                                🌙
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>📝 行程信息</h3>
+                
+                <div class="form-group">
+                    <label>出发地</label>
+                    <input type="text" id="departure" placeholder="请输入出发城市">
+                </div>
+                
+                <div class="form-group">
+                    <label>省份</label>
+                    <select id="province">
+                        <option value="">请选择省份</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>目的地城市</label>
+                    <select id="destination">
+                        <option value="">请先选择省份</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>出发日期</label>
+                    <input type="date" id="startDate">
+                </div>
+                
+                <div class="form-group">
+                    <label>结束日期</label>
+                    <input type="date" id="endDate">
+                </div>
+                
+                <div class="form-group">
+                    <label>出行人数</label>
+                    <select id="people">
+                        <option value="1">1人</option>
+                        <option value="2">2人</option>
+                        <option value="3">3人</option>
+                        <option value="4">4人</option>
+                        <option value="5">5人</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>旅行风格</label>
+                    <select id="style">
+                        <option value="jingji">经济型</option>
+                        <option value="shushi">舒适型</option>
+                        <option value="haohua">豪华型</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>交通方式</label>
+                    <select id="transport">
+                        <option value="feiji">飞机</option>
+                        <option value="huoche">火车</option>
+                        <option value="zijiache">自驾</option>
+                        <option value="tuijian">智能推荐</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>附加目的地（可选）</label>
+                    <input type="text" id="additionalDestinations" placeholder="多个城市用逗号分隔，如：杭州,苏州">
+                </div>
+                
+                <div class="form-group">
+                    <label>特殊要求（可选）</label>
+                    <input type="text" id="specialRequests" placeholder="例如：想骑马、喜欢自然风光、想吃当地美食">
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-random" onclick="randomFillForm()">随机填充</button>
+                    <button class="btn btn-primary" onclick="generatePlan()">生成攻略</button>
+                    <button class="btn btn-secondary" onclick="location.href='/my-trips'">我的行程</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card result-section" id="resultSection">
+            <h2>📄 生成的旅行攻略</h2>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>AI正在为您生成专属旅行攻略...</p>
+            </div>
+            
+            <div id="planResult" style="display: none;">
+                <div class="plan-text" id="planText"></div>
+                <div class="timeline" id="timelineCard" style="display: none;">
+                    <h3>📅 行程时间轴</h3>
+                    <div id="timeline"></div>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-btn primary" onclick="previewReport()">预览报告</button>
+                    <button class="action-btn secondary" onclick="savePlan()">保存行程</button>
+                    <button class="action-btn secondary" onclick="downloadReport()">下载报告</button>
+                    <button class="action-btn secondary" onclick="sharePlan()">分享行程</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast"></div>
+    
+    <script>
+        // ===== 实时时钟更新 =====
+        function updateClock() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const clockEl = document.getElementById('live-clock');
+            if (clockEl) {
+                clockEl.textContent = `⏰ ${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            }
+        }
+
+        // ===== 深色模式切换 =====
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('theme-toggle');
+            
+            // 从localStorage读取主题设置
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.body.classList.add('dark-mode');
+                themeToggle.textContent = '☀️';
+            } else {
+                themeToggle.textContent = '🌙';
+            }
+            
+            // 绑定切换事件
+            themeToggle.addEventListener('click', function() {
+                const isDark = document.body.classList.toggle('dark-mode');
+                if (isDark) {
+                    themeToggle.textContent = '☀️';
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    themeToggle.textContent = '🌙';
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+            
+            // 启动实时时钟
+            updateClock();
+            setInterval(updateClock, 1000);
+            
+            // 获取更新时间
+            fetch('/api/last-update')
+                .then(response => response.json())
+                .then(data => {
+                    const timeEl = document.getElementById('update-time-value');
+                    if (timeEl && data.last_update_time) {
+                        timeEl.textContent = data.last_update_time;
+                    }
+                })
+                .catch(error => {
+                    console.error('获取更新时间失败:', error);
+                    // 如果API请求失败，显示当前时间作为默认值
+                    const timeEl = document.getElementById('update-time-value');
+                    if (timeEl) {
+                        const now = new Date();
+                        const year = now.getFullYear();
+                        const month = String(now.getMonth() + 1).padStart(2, '0');
+                        const day = String(now.getDate()).padStart(2, '0');
+                        const hours = String(now.getHours()).padStart(2, '0');
+                        const minutes = String(now.getMinutes()).padStart(2, '0');
+                        timeEl.textContent = `${year}-${month}-${day} ${hours}:${minutes}`;
+                    }
+                });
+        });
+        
+        const provinceCities = {
+            "北京": ["北京"],
+            "天津": ["天津"],
+            "河北": ["石家庄", "唐山", "秦皇岛", "邯郸", "邢台", "保定", "张家口", "承德", "沧州", "廊坊", "衡水"],
+            "山西": ["太原", "大同", "阳泉", "长治", "晋城", "朔州", "晋中", "运城", "忻州", "临汾", "吕梁"],
+            "内蒙古": ["呼和浩特", "包头", "鄂尔多斯", "呼伦贝尔", "赤峰", "通辽", "乌海", "锡林郭勒"],
+            "辽宁": ["沈阳", "大连", "鞍山", "抚顺", "本溪", "丹东", "锦州", "营口", "阜新", "辽阳", "盘锦", "铁岭", "朝阳", "葫芦岛"],
+            "吉林": ["长春", "吉林", "四平", "辽源", "通化", "白山", "松原", "白城", "延边"],
+            "黑龙江": ["哈尔滨", "大庆", "齐齐哈尔", "牡丹江", "佳木斯", "绥化", "黑河", "大兴安岭"],
+            "上海": ["上海"],
+            "江苏": ["南京", "苏州", "无锡", "常州", "镇江", "扬州", "泰州", "南通", "盐城", "淮安", "连云港", "徐州", "宿迁"],
+            "浙江": ["杭州", "宁波", "温州", "嘉兴", "湖州", "绍兴", "金华", "衢州", "舟山", "台州", "丽水"],
+            "安徽": ["合肥", "芜湖", "蚌埠", "淮南", "马鞍山", "淮北", "铜陵", "安庆", "黄山", "滁州", "阜阳", "宿州", "六安", "亳州", "池州", "宣城"],
+            "福建": ["福州", "厦门", "泉州", "漳州", "莆田", "三明", "南平", "龙岩", "宁德"],
+            "江西": ["南昌", "景德镇", "九江", "赣州", "吉安", "宜春", "抚州", "上饶", "萍乡", "新余", "鹰潭"],
+            "山东": ["济南", "青岛", "淄博", "枣庄", "东营", "烟台", "潍坊", "济宁", "泰安", "威海", "日照", "临沂", "德州", "聊城", "滨州", "菏泽"],
+            "河南": ["郑州", "开封", "洛阳", "平顶山", "安阳", "鹤壁", "新乡", "焦作", "濮阳", "许昌", "漯河", "三门峡", "南阳", "商丘", "信阳", "周口", "驻马店", "济源"],
+            "湖北": ["武汉", "黄石", "十堰", "宜昌", "襄阳", "鄂州", "荆门", "孝感", "荆州", "黄冈", "咸宁", "随州", "恩施", "仙桃", "潜江", "天门"],
+            "湖南": ["长沙", "株洲", "湘潭", "衡阳", "邵阳", "岳阳", "常德", "张家界", "益阳", "郴州", "永州", "怀化", "娄底", "湘西"],
+            "广东": ["广州", "深圳", "珠海", "佛山", "惠州", "东莞", "中山", "江门", "湛江", "茂名", "肇庆", "汕头", "韶关", "梅州", "汕尾", "河源", "阳江", "清远", "潮州", "揭州", "云浮"],
+            "广西": ["南宁", "柳州", "桂林", "梧州", "北海", "防城港", "钦州", "贵港", "玉林", "百色", "贺州", "河池", "来宾", "崇左"],
+            "海南": ["海口", "三亚", "三沙", "儋州"],
+            "重庆": ["重庆"],
+            "四川": ["成都", "绵阳", "自贡", "攀枝花", "泸州", "德阳", "广元", "遂宁", "内江", "乐山", "南充", "眉山", "宜宾", "广安", "达州", "雅安", "巴中", "资阳", "阿坝", "甘孜", "凉山"],
+            "贵州": ["贵阳", "遵义", "六盘水", "安顺", "毕节", "铜仁", "黔西南", "黔东南", "黔南"],
+            "云南": ["昆明", "曲靖", "玉溪", "保山", "昭通", "丽江", "普洱", "临沧", "楚雄", "红河", "文山", "西双版纳", "大理", "德宏", "怒江", "迪庆"],
+            "西藏": ["拉萨", "日喀则", "昌都", "林芝", "山南", "那曲", "阿里"],
+            "陕西": ["西安", "铜川", "宝鸡", "咸阳", "渭南", "延安", "汉中", "榆林", "安康", "商洛"],
+            "甘肃": ["兰州", "嘉峪关", "金昌", "白银", "天水", "武威", "张掖", "平凉", "酒泉", "庆阳", "定西", "陇南", "临夏", "甘南"],
+            "青海": ["西宁", "海东", "海北", "黄南", "海南", "果洛", "玉树", "海西"],
+            "宁夏": ["银川", "石嘴山", "吴忠", "固原", "中卫"],
+            "新疆": ["乌鲁木齐", "克拉玛依", "吐鲁番", "哈密", "阿克苏", "喀什", "和田", "伊犁", "塔城", "阿勒泰", "博尔塔拉", "巴音郭楞", "克孜勒苏", "昌吉", "博尔塔拉"]
+        };
+        
+        // 初始化省份下拉框
+        function initProvinces() {
+            const provinceSelect = document.getElementById('province');
+            for (const province in provinceCities) {
+                const option = document.createElement('option');
+                option.value = province;
+                option.textContent = province;
+                provinceSelect.appendChild(option);
+            }
+        }
+        
+        // 省份变更时更新城市列表
+        document.getElementById('province').addEventListener('change', function() {
+            const province = this.value;
+            const citySelect = document.getElementById('destination');
+            citySelect.innerHTML = '<option value="">请选择城市</option>';
+            
+            if (province && provinceCities[province]) {
+                provinceCities[province].forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    option.textContent = city;
+                    citySelect.appendChild(option);
+                });
+            }
+        });
+        
+        initProvinces();
+        
+        function randomFillForm() {
+            const provinces = Object.keys(provinceCities);
+            
+            // 如果出发地未填写，则随机填充
+            const departureInput = document.getElementById('departure').value;
+            if (!departureInput) {
+                const departureProvince = provinces[Math.floor(Math.random() * provinces.length)];
+                const departureCity = provinceCities[departureProvince][Math.floor(Math.random() * provinceCities[departureProvince].length)];
+                document.getElementById('departure').value = departureCity;
+            }
+            
+            // 如果目的地未填写，则随机填充
+            const destinationInput = document.getElementById('destination').value;
+            if (!destinationInput) {
+                let destinationProvince = provinces[Math.floor(Math.random() * provinces.length)];
+                // 尝试找到一个不同于出发地的省份
+                const currentDeparture = document.getElementById('departure').value;
+                let attempts = 0;
+                while (attempts < 10) {
+                    const deptProvince = Object.keys(provinceCities).find(p => 
+                        provinceCities[p].includes(currentDeparture)
+                    );
+                    if (deptProvince && deptProvince === destinationProvince) {
+                        destinationProvince = provinces[Math.floor(Math.random() * provinces.length)];
+                        attempts++;
+                    } else {
+                        break;
+                    }
+                }
+                
+                const destinationCity = provinceCities[destinationProvince][Math.floor(Math.random() * provinceCities[destinationProvince].length)];
+                
+                setTimeout(() => {
+                    document.getElementById('province').value = destinationProvince;
+                    document.getElementById('province').dispatchEvent(new Event('change'));
+                    setTimeout(() => {
+                        document.getElementById('destination').value = destinationCity;
+                    }, 100);
+                }, 100);
+            }
+            
+            // 如果出发日期未填写，则随机填充
+            const startDateInput = document.getElementById('startDate').value;
+            if (!startDateInput) {
+                const today = new Date();
+                const startOffset = Math.floor(Math.random() * 30) + 1;
+                const startDate = new Date(today);
+                startDate.setDate(today.getDate() + startOffset);
+                document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
+            }
+            
+            // 如果结束日期未填写，则随机填充
+            const endDateInput = document.getElementById('endDate').value;
+            if (!endDateInput) {
+                const tripDays = Math.floor(Math.random() * 5) + 3;
+                const startDateVal = new Date(document.getElementById('startDate').value);
+                const endDate = new Date(startDateVal);
+                endDate.setDate(startDateVal.getDate() + tripDays);
+                document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+            }
+            
+            // 如果人数未填写，则随机填充
+            const peopleInput = document.getElementById('people').value;
+            if (!peopleInput) {
+                const peopleOptions = ["1", "2", "3", "4", "5"];
+                document.getElementById('people').value = peopleOptions[Math.floor(Math.random() * peopleOptions.length)];
+            }
+            
+            // 如果旅行风格未填写，则随机填充
+            const styleInput = document.getElementById('style').value;
+            if (!styleInput) {
+                const styles = ["jingji", "shushi", "haohua"];
+                document.getElementById('style').value = styles[Math.floor(Math.random() * styles.length)];
+            }
+            
+            // 如果交通方式未填写，则随机填充
+            const transportInput = document.getElementById('transport').value;
+            if (!transportInput) {
+                const transports = ["feiji", "huoche", "zijiache", "tuijian"];
+                document.getElementById('transport').value = transports[Math.floor(Math.random() * transports.length)];
+            }
+            
+            showToast('已填充未填写的表单信息！', 'success');
+        }
+        
+        let generatedPlan = null;
+        
+        function generatePlan() {
+            const departure = document.getElementById('departure').value;
+            const destination = document.getElementById('destination').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const people = document.getElementById('people').value;
+            const style = document.getElementById('style').value;
+            const transport = document.getElementById('transport').value;
+            const additionalDestinations = document.getElementById('additionalDestinations').value;
+            const specialRequests = document.getElementById('specialRequests').value;
+
+            if (!departure || !destination || !startDate || !endDate) {
+                showToast('请填写完整的行程信息！', 'error');
+                return;
+            }
+
+            // 将表单数据保存到 localStorage，供加载页面使用
+            const formData = {
+                departure, destination, start_date: startDate, end_date: endDate,
+                people, style, transport, additionalDestinations, specialRequests
+            };
+            localStorage.setItem('tripFormData', JSON.stringify(formData));
+
+            // 跳转到独立的加载页面
+            window.location.href = '/loading';
+        }
+        
+        function displayPlan(plan, budget) {
+            document.getElementById('planText').innerHTML = plan;
+            displayTimeline(document.getElementById('startDate').value, 
+                          (new Date(document.getElementById('endDate').value) - new Date(document.getElementById('startDate').value)) / (1000 * 60 * 60 * 24) + 1,
+                          document.getElementById('destination').value);
+        }
+        
+        function openPreview(planHtml, budget) {
+            const departure = document.getElementById('departure').value;
+            const destination = document.getElementById('destination').value;
+            const title = `${departure}→${destination}旅行攻略`;
+            
+            console.log('=== openPreview 调试信息 ===');
+            console.log('1. departure:', departure);
+            console.log('2. destination:', destination);
+            console.log('3. title:', title);
+            console.log('4. planHtml 长度:', planHtml ? planHtml.length : 0);
+            console.log('5. planHtml 前500字:', planHtml ? planHtml.substring(0, 500) : '空');
+            console.log('6. planHtml 是否包含HTML标签:', planHtml && planHtml.includes('<'));
+            
+            // 创建表单提交到预览页面
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/preview';
+            form.target = '_self';
+            
+            const titleInput = document.createElement('input');
+            titleInput.type = 'hidden';
+            titleInput.name = 'title';
+            titleInput.value = title;
+            
+            const planInput = document.createElement('input');
+            planInput.type = 'hidden';
+            planInput.name = 'plan_html';
+            planInput.value = planHtml;
+            
+            form.appendChild(titleInput);
+            form.appendChild(planInput);
+            document.body.appendChild(form);
+            
+            console.log('7. 表单已创建，即将提交...');
+            console.log('8. titleInput值:', titleInput.value);
+            console.log('9. planInput值长度:', planInput.value ? planInput.value.length : 0);
+            
+            form.submit();
+            console.log('10. 表单已提交');
+        }
+        
+        function displayTimeline(startDate, days, destination) {
+            const timelineCard = document.getElementById('timelineCard');
+            const timeline = document.getElementById('timeline');
+            
+            const dayPlans = [];
+            if (generatedPlan) {
+                dayPlans = parseTripPlan(generatedPlan, days);
+            }
+            
+            let html = '';
+            for (let i = 0; i < days; i++) {
+                const date = new Date(startDate);
+                date.setDate(date.getDate() + i);
+                const dateStr = date.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'long' });
+                const dayPlan = dayPlans[i] || {};
+                
+                html += `
+                    <div class="timeline-item">
+                        <div class="time">第${i + 1}天 - ${dateStr}</div>
+                        <div class="content">`;
+                
+                if (dayPlan.morning) {
+                    html += `
+                        <div class="activity">
+                            <span class="icon">🌅</span>
+                            <div class="info">
+                                <div class="name">${dayPlan.morning.name || '上午活动'}</div>
+                                <div class="detail">${dayPlan.morning.desc || ''}</div>
+                            </div>
+                            ${dayPlan.morning.nav ? `<a href="${dayPlan.morning.nav}" target="_blank" class="nav-btn">📍导航</a>` : ''}
+                        </div>`;
+                }
+                if (dayPlan.lunch) {
+                    html += `
+                        <div class="activity">
+                            <span class="icon">🍜</span>
+                            <div class="info">
+                                <div class="name">${dayPlan.lunch.name || '午餐'}</div>
+                                <div class="detail">${dayPlan.lunch.desc || ''}</div>
+                            </div>
+                            ${dayPlan.lunch.nav ? `<a href="${dayPlan.lunch.nav}" target="_blank" class="nav-btn">📍导航</a>` : ''}
+                        </div>`;
+                }
+                if (dayPlan.afternoon) {
+                    html += `
+                        <div class="activity">
+                            <span class="icon">☀️</span>
+                            <div class="info">
+                                <div class="name">${dayPlan.afternoon.name || '下午活动'}</div>
+                                <div class="detail">${dayPlan.afternoon.desc || ''}</div>
+                            </div>
+                            ${dayPlan.afternoon.nav ? `<a href="${dayPlan.afternoon.nav}" target="_blank" class="nav-btn">📍导航</a>` : ''}
+                        </div>`;
+                }
+                if (dayPlan.dinner) {
+                    html += `
+                        <div class="activity">
+                            <span class="icon">🍽️</span>
+                            <div class="info">
+                                <div class="name">${dayPlan.dinner.name || '晚餐'}</div>
+                                <div class="detail">${dayPlan.dinner.desc || ''}</div>
+                            </div>
+                            ${dayPlan.dinner.nav ? `<a href="${dayPlan.dinner.nav}" target="_blank" class="nav-btn">📍导航</a>` : ''}
+                        </div>`;
+                }
+                if (dayPlan.evening) {
+                    html += `
+                        <div class="activity">
+                            <span class="icon">🌙</span>
+                            <div class="info">
+                                <div class="name">${dayPlan.evening.name || '晚上活动'}</div>
+                                <div class="detail">${dayPlan.evening.desc || ''}</div>
+                            </div>
+                        </div>`;
+                }
+                
+                html += `</div></div>`;
+            }
+            
+            timeline.innerHTML = html;
+            timelineCard.style.display = 'block';
+        }
+        
+        function parseTripPlan(planText, days) {
+            const dayPlans = [];
+            const dayRegex = /📅\s*第\d+天[^\n]*\n([\s\S]*?)(?=📅\s*第\d+天|🏨|$)/gi;
+            let match;
+            
+            while ((match = dayRegex.exec(planText)) !== null && dayPlans.length < days) {
+                const dayContent = match[1];
+                const dayPlan = {};
+                
+                // 解析上午
+                const morningMatch = dayContent.match(/【上午】[^\n]*景点[^\n]*名称[：:]([^\n|]+)/i);
+                if (morningMatch) {
+                    dayPlan.morning = { name: morningMatch[1].trim(), desc: '' };
+                    const navMatch = dayContent.match(/【上午】[^\n]*\n[^\n]*\[📍导航\]\(([^)]+)\)/);
+                    if (navMatch) dayPlan.morning.nav = navMatch[1];
+                }
+                
+                // 解析午餐
+                const lunchMatch = dayContent.match(/【午餐】[^\n]*餐馆[^\n]*名称[：:]([^\n|]+)/i);
+                if (lunchMatch) {
+                    dayPlan.lunch = { name: lunchMatch[1].trim(), desc: '' };
+                    const dishMatch = dayContent.match(/特色菜[：:]([^\n|]+)/i);
+                    if (dishMatch) dayPlan.lunch.desc = dishMatch[1].trim();
+                    const navMatch = dayContent.match(/【午餐】[^\n]*\n[^\n]*\[📍导航\]\(([^)]+)\)/);
+                    if (navMatch) dayPlan.lunch.nav = navMatch[1];
+                }
+                
+                // 解析下午
+                const afternoonMatch = dayContent.match(/【下午】[^\n]*景点[^\n]*名称[：:]([^\n|]+)/i);
+                if (afternoonMatch) {
+                    dayPlan.afternoon = { name: afternoonMatch[1].trim(), desc: '' };
+                    const navMatch = dayContent.match(/【下午】[^\n]*\n[^\n]*\[📍导航\]\(([^)]+)\)/);
+                    if (navMatch) dayPlan.afternoon.nav = navMatch[1];
+                }
+                
+                // 解析晚餐
+                const dinnerMatch = dayContent.match(/【晚餐】[^\n]*餐馆[^\n]*名称[：:]([^\n|]+)/i);
+                if (dinnerMatch) {
+                    dayPlan.dinner = { name: dinnerMatch[1].trim(), desc: '' };
+                    const dishMatch = dayContent.match(/特色菜[：:]([^\n|]+)/i);
+                    if (dishMatch) dayPlan.dinner.desc = dishMatch[1].trim();
+                    const navMatch = dayContent.match(/【晚餐】[^\n]*\n[^\n]*\[📍导航\]\(([^)]+)\)/);
+                    if (navMatch) dayPlan.dinner.nav = navMatch[1];
+                }
+                
+                // 解析晚上
+                const eveningMatch = dayContent.match(/【晚上】[^\n]*(?:活动建议[：:])?([^\n]+)/i);
+                if (eveningMatch) {
+                    dayPlan.evening = { name: '晚上活动', desc: eveningMatch[1].trim() };
+                }
+                
+                if (Object.keys(dayPlan).length > 0) {
+                    dayPlans.push(dayPlan);
+                }
+            }
+            
+            return dayPlans;
+        }
+        
+        function previewReport() {
+            if (!generatedPlan) {
+                showToast('请先生成旅行攻略', 'error');
+                return;
+            }
+            
+            const departure = document.getElementById('departure').value;
+            const destination = document.getElementById('destination').value;
+            const startDate = new Date(document.getElementById('startDate').value);
+            const endDate = new Date(document.getElementById('endDate').value);
+            const people = document.getElementById('people').value;
+            const style = document.getElementById('style').value;
+            
+            fetch('/api/preview', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    departure, destination, start_date: startDate.toISOString(), end_date: endDate.toISOString(),
+                    people, style, plan: generatedPlan
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const newWindow = window.open('', '_blank');
+                    newWindow.document.write(data.html);
+                    newWindow.document.close();
+                } else {
+                    showToast(data.message || '预览失败', 'error');
+                }
+            })
+            .catch(error => {
+                showToast('网络错误', 'error');
+            });
+        }
+        
+        function savePlan() {
+            if (!generatedPlan) {
+                showToast('请先生成旅行攻略', 'error');
+                return;
+            }
+            
+            const departure = document.getElementById('departure').value;
+            const destination = document.getElementById('destination').value;
+            const startDate = new Date(document.getElementById('startDate').value);
+            const endDate = new Date(document.getElementById('endDate').value);
+            const people = document.getElementById('people').value;
+            const style = document.getElementById('style').value;
+            const transport = document.getElementById('transport').value;
+            
+            fetch('/api/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    departure, destination, start_date: startDate.toISOString(), end_date: endDate.toISOString(),
+                    people, style, transport, plan: generatedPlan
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('行程已保存！', 'success');
+                } else {
+                    showToast(data.message || '保存失败', 'error');
+                }
+            })
+            .catch(error => {
+                showToast('网络错误', 'error');
+            });
+        }
+        
+        function downloadReport() {
+            if (!generatedPlan) {
+                showToast('请先生成旅行攻略', 'error');
+                return;
+            }
+            
+            const departure = document.getElementById('departure').value;
+            const destination = document.getElementById('destination').value;
+            
+            const blob = new Blob([generatedPlan], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${departure}-${destination}-旅行攻略.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showToast('报告已下载！', 'success');
+        }
+        
+        function sharePlan() {
+            if (!generatedPlan) {
+                showToast('请先生成旅行攻略', 'error');
+                return;
+            }
+            
+            const text = `我在旅游规划助手上创建了一份从${document.getElementById('departure').value}到${document.getElementById('destination').value}的旅行攻略，快来看看吧！`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: '旅行攻略',
+                    text: text,
+                    url: window.location.href
+                }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(text + '\n\n' + window.location.href).then(() => {
+                    showToast('攻略链接已复制到剪贴板！', 'success');
+                });
+            }
+        }
+        
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show';
+            
+            setTimeout(() => {
+                toast.className = 'toast';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
