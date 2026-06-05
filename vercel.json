@@ -1,7 +1,7 @@
 {
   "builds": [
     {
-      "src": "app.py",
+      "src": "wsgi.py",
       "use": "@vercel/python",
       "config": {
         "maxLambdaSize": "50mb"
@@ -11,7 +11,11 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "app.py"
+      "dest": "wsgi.py"
     }
-  ]
+  ],
+  "env": {
+    "FLASK_APP": "app.py",
+    "FLASK_ENV": "production"
+  }
 }
